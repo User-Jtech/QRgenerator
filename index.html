@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="QRSync & Styler: genera códigos QR personalizados en tiempo real, cambia colores y marcos, y descárgalos en PNG.">
+  <meta name="theme-color" content="#0C0E13">
+  <title>QRSync & Styler · Generador de códigos QR</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23F4F6FB'/%3E%3Crect x='6' y='6' width='8' height='8' fill='%23111318'/%3E%3Crect x='18' y='6' width='8' height='8' fill='%23111318'/%3E%3Crect x='6' y='18' width='8' height='8' fill='%23111318'/%3E%3Crect x='18' y='18' width='3' height='3' fill='%23111318'/%3E%3Crect x='23' y='18' width='3' height='3' fill='%23111318'/%3E%3Crect x='18' y='23' width='3' height='3' fill='%23111318'/%3E%3Crect x='23' y='23' width='3' height='3' fill='%23111318'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+          <span></span><span class="is-off"></span><span></span>
+          <span></span><span></span><span class="is-off"></span>
+        </span>
+        <div>
+          <p class="kicker">Marketing y desarrollo</p>
+          <h1>QRSync <span>&amp; Styler</span></h1>
+        </div>
+      </div>
+      <p class="lead">Genera códigos QR personalizados al momento, cambia sus colores, añade un marco con llamada a la acción y descárgalos en PNG de alta calidad.</p>
+      <ul class="pills">
+        <li>Tiempo real</li>
+        <li>Colores y marcos</li>
+        <li>Descarga PNG</li>
+      </ul>
+    </header>
+
+    <main class="layout">
+      <!-- Columna izquierda: controles -->
+      <section class="card controls-card" aria-labelledby="controls-title">
+        <header class="card__head">
+          <h2 id="controls-title">Personaliza</h2>
+          <p>El código se redibuja mientras escribes. No hace falta pulsar actualizar.</p>
+        </header>
+
+        <form id="qr-form" class="stack" autocomplete="off">
+          <div>
+            <div class="label-row">
+              <label class="field-label" for="qr-text">Enlace o texto</label>
+              <button type="button" id="use-example" class="text-btn">Usar ejemplo</button>
+            </div>
+            <input
+              id="qr-text"
+              name="qr-text"
+              type="text"
+              placeholder="https://tu-portafolio.com"
+              spellcheck="false"
+              autocapitalize="off"
+              maxlength="2500"
+            >
+            <p class="hint">Pega un enlace o un texto. Si el campo está vacío, verás un QR de ejemplo.</p>
+          </div>
+
+          <div>
+            <p id="colors-label" class="field-label">Colores</p>
+            <div class="color-grid" role="group" aria-labelledby="colors-label">
+              <label class="color-field">
+                <input id="color-ink" type="color" value="#111827" aria-label="Color principal del QR">
+                <span class="color-meta">
+                  <small>Principal</small>
+                  <strong id="ink-hex">#111827</strong>
+                </span>
+              </label>
+              <label class="color-field">
+                <input id="color-paper" type="color" value="#FFFFFF" aria-label="Color de fondo del QR">
+                <span class="color-meta">
+                  <small>Fondo</small>
+                  <strong id="paper-hex">#FFFFFF</strong>
+                </span>
+              </label>
+            </div>
+            <p class="note" id="contrast-note" hidden></p>
+          </div>
+
+          <div>
+            <p id="frames-label" class="field-label">Marco</p>
+            <div class="frames" role="group" aria-labelledby="frames-label">
+              <button type="button" class="frame-btn" data-frame="none" aria-pressed="false">Sin marco</button>
+              <button type="button" class="frame-btn is-active" data-frame="scan" aria-pressed="true">¡Escaneame!</button>
+              <button type="button" class="frame-btn" data-frame="web" aria-pressed="false">Visita mi Web</button>
+              <button type="button" class="frame-btn" data-frame="follow" aria-pressed="false">Sígueme</button>
+            </div>
+            <p class="frame-help" id="frame-help">Banner inferior con la llamada ¡Escaneame!</p>
+          </div>
+        </form>
+      </section>
+
+      <!-- Columna derecha: vista previa -->
+      <section class="card preview-card" aria-labelledby="preview-title">
+        <header class="card__head card__head--row">
+          <div>
+            <h2 id="preview-title">Vista previa</h2>
+            <p>Así se verá el archivo descargado.</p>
+          </div>
+          <p class="status" id="status">
+            <span class="status__dot" id="status-dot"></span>
+            <span id="status-text">Listo para descargar</span>
+          </p>
+        </header>
+
+        <div class="stage">
+          <canvas id="qr-canvas" width="1600" height="1800" role="img" aria-label="Vista previa del código QR"></canvas>
+        </div>
+        <p class="caption" id="caption">Ejemplo · https://tu-portafolio.com</p>
+
+        <div class="actions">
+          <button type="button" id="btn-download" class="btn btn--primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4v10"></path>
+              <path d="m8 10 4 4 4-4"></path>
+              <path d="M5 19h14"></path>
+            </svg>
+            Descargar QR
+          </button>
+          <button type="button" id="btn-copy" class="btn btn--ghost">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="11" height="11" rx="2"></rect>
+              <path d="M5 15V5a2 2 0 0 1 2-2h10"></path>
+            </svg>
+            Copiar al portapapeles
+          </button>
+        </div>
+        <p class="export-note">PNG de alta calidad · 1600 px de ancho</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>QRSync &amp; Styler · Proyecto de portafolio de Desarrollo de Aplicaciones Web</p>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Librería ligera: solo calcula la matriz del QR. El dibujo está en main.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
